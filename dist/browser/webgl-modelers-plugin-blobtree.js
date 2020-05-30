@@ -374,7 +374,7 @@
         m.receiveShadow = true;
         m.castShadow = true;
         m.name = "blobtree";
-        this.addMesh(m);
+        this.addModel(m);
 
     };
     BlobtreeSceneManager.prototype = Object.create( SceneManager.prototype );
@@ -404,7 +404,7 @@
                 if(bt.intersectRayBlob(ray,res,dcomputer.length()+size.x+size.y+size.z,precision || 0.001)){
                     return [{
                         distance:   res.distance,
-                        object:     this.meshGroup.getObjectByName("blobtree"),
+                        object:     this.modelGroup.getObjectByName("blobtree"),
                         point:      res.point,
                         gradient:   res.g
                     }];
@@ -419,8 +419,8 @@
      *  Should be used with care.
      */
     BlobtreeSceneManager.prototype.clearBlobtreeMesh = function(){
-        this.meshGroup.getObjectByName("blobtree").geometry.dispose();
-        this.meshGroup.getObjectByName("blobtree").geometry = this.emptyG;
+        this.modelGroup.getObjectByName("blobtree").geometry.dispose();
+        this.modelGroup.getObjectByName("blobtree").geometry = this.emptyG;
         this.requireRender();
     };
 
