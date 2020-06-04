@@ -362,20 +362,6 @@
      */
     var BlobtreeSceneManager = function(model) {
         SceneManager.call(this, model);
-
-        this.emptyG = new threeFull.BufferGeometry();
-        this.emptyG.addAttribute('position',new threeFull.BufferAttribute(new Float32Array([0,0,0,0,0,0,0,0,0]), 3));// Avoid a THREE.JS Warning
-
-        // Init with a Blobtree Mesh
-        var m = new threeFull.Mesh(
-            this.emptyG,
-            this.surfaceMat
-        );
-        m.receiveShadow = true;
-        m.castShadow = true;
-        m.name = "blobtree";
-        this.addModel(m);
-
     };
     BlobtreeSceneManager.prototype = Object.create( SceneManager.prototype );
     BlobtreeSceneManager.prototype.constructor = BlobtreeSceneManager;
@@ -420,7 +406,9 @@
      */
     BlobtreeSceneManager.prototype.clearBlobtreeMesh = function(){
         this.modelGroup.getObjectByName("blobtree").geometry.dispose();
-        this.modelGroup.getObjectByName("blobtree").geometry = this.emptyG;
+        var defaultG = new threeFull.BufferGeometry();
+        defaultG.addAttribute('position', new threeFull.BufferAttribute(new Float32Array([0, 0, 0, 0, 0, 0, 0, 0, 0]), 3));// Avoid a THREE.JS Warning
+        this.modelGroup.getObjectByName("blobtree").geometry = defaultG;
         this.requireRender();
     };
 
