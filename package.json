@@ -20,7 +20,6 @@
     "three-js-blobtree": "file:../three-js-blobtree"
   },
   "devDependencies": {
-    "@dualbox/dualbox-lib-imagedata": "^1.0.17",
     "rollup-plugin-node-builtins": "^2.1.2",
     "rollup-plugin-node-globals": "^1.4.0",
     "eslint": "^4.11.0",
