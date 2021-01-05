@@ -46,7 +46,7 @@ var BlobtreeModel = Backbone.Model.extend(
         this.blobtree = new Blobtree.RootNode();
 
         this.blobGeom = new THREE.BufferGeometry();
-        this.blobGeom.addAttribute('position',new THREE.BufferAttribute(new Float32Array([0,0,0,0,0,0,0,0,0]), 3));// Avoid a THREE.JS Warning
+        this.blobGeom.setAttribute('position',new THREE.BufferAttribute(new Float32Array([0,0,0,0,0,0,0,0,0]), 3));// Avoid a THREE.JS Warning
 
         this.gStatus = GSTATUS.OUTDATED;
 
@@ -168,9 +168,9 @@ var BlobtreeModel = Backbone.Model.extend(
                     if(data.cmd === "geometry" && self.processId === data.processId){
                         self._setGStatus(GSTATUS.COMPUTING, 100);
                         self.blobGeom = new THREE.BufferGeometry();
-                        self.blobGeom.addAttribute('position', new THREE.BufferAttribute(data.buffers.position, 3));
-                        self.blobGeom.addAttribute('normal', new THREE.BufferAttribute(data.buffers.normal, 3));
-                        self.blobGeom.addAttribute('color', new THREE.BufferAttribute(data.buffers.color, 3));
+                        self.blobGeom.setAttribute('position', new THREE.BufferAttribute(data.buffers.position, 3));
+                        self.blobGeom.setAttribute('normal', new THREE.BufferAttribute(data.buffers.normal, 3));
+                        self.blobGeom.setAttribute('color', new THREE.BufferAttribute(data.buffers.color, 3));
                         self.blobGeom.setIndex(new THREE.BufferAttribute(data.buffers.index, 1));
                         self.blobGeom.computeBoundingBox();
                         self.clearWorker();

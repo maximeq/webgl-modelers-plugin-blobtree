@@ -58,7 +58,7 @@ BlobtreeSceneManager.prototype.getSceneIntersections = (function(){
 BlobtreeSceneManager.prototype.clearBlobtreeMesh = function(){
     this.modelGroup.getObjectByName("blobtree").geometry.dispose();
     var defaultG = new THREE.BufferGeometry();
-    defaultG.addAttribute('position', new THREE.BufferAttribute(new Float32Array([0, 0, 0, 0, 0, 0, 0, 0, 0]), 3));// Avoid a THREE.JS Warning
+    defaultG.setAttribute('position', new THREE.BufferAttribute(new Float32Array([0, 0, 0, 0, 0, 0, 0, 0, 0]), 3));// Avoid a THREE.JS Warning
     this.modelGroup.getObjectByName("blobtree").geometry = defaultG;
     this.requireRender();
 };

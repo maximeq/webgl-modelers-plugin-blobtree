@@ -1,6 +1,6 @@
 {
   "name": "webgl-modelers-plugin-blobtree",
-  "version": "1.0.0",
+  "version": "1.122.0",
   "description": "Add modules to webgl-modelers for modelers using blobtree.",
   "main": "src/exports.js",
   "scripts": {
@@ -10,12 +10,12 @@
   },
   "dependencies": {
     "webgl-modelers": "file:../webgl-modelers",
+    "@dualbox/three": "^1.122.4",
     "backbone": "^1.4.0",
     "bootstrap": "^4.3.1",
     "javascript-state-machine": "^3.1.0",
     "jquery": "^3.3.1",
     "jszip-sync": "^3.2.1-sync",
-    "three-full": "16.0.1",
     "underscore": "^1.9.1",
     "three-js-blobtree": "file:../three-js-blobtree"
   },
