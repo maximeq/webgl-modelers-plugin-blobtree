@@ -2,7 +2,7 @@
 
 var WebGLModelers = require("webgl-modelers");
 
-const THREE = require("three-full");
+const THREE = require("three");
 const BlobtreeModel = require("../model/BlobtreeModel");
 
 const SceneManager = WebGLModelers.SceneManager;
