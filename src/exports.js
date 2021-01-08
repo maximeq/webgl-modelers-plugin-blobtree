@@ -1,5 +1,7 @@
 'use strict';
 
+require('./CheckTHREE');
+
 var WebGLModelers = require("webgl-modelers");
 
 WebGLModelers.Plugins.Blobtree = {
