@@ -9,15 +9,15 @@
     "lint": "eslint --env node --env browser --env es6 **.js"
   },
   "dependencies": {
-    "webgl-modelers": "file:../webgl-modelers",
-    "@dualbox/three": "^1.122.4",
+    "@dualbox/three": "^1.122.7",
     "backbone": "^1.4.0",
     "bootstrap": "^4.3.1",
     "javascript-state-machine": "^3.1.0",
     "jquery": "^3.3.1",
     "jszip-sync": "^3.2.1-sync",
+    "three-js-blobtree": "file:../three-js-blobtree",
     "underscore": "^1.9.1",
-    "three-js-blobtree": "file:../three-js-blobtree"
+    "webgl-modelers": "file:../webgl-modelers"
   },
   "devDependencies": {
     "rollup-plugin-node-builtins": "^2.1.2",

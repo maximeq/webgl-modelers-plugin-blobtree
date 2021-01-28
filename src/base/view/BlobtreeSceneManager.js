@@ -19,7 +19,7 @@ BlobtreeSceneManager.prototype.constructor = BlobtreeSceneManager;
 
 /**
  *  Will return
- *  @param {number} precision DEfault to 0.001
+ *  @param {number} precision Default to 0.001
  */
 BlobtreeSceneManager.prototype.getSceneIntersections = (function(){
     var size = new THREE.Vector3();
