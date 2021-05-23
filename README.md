@@ -4,12 +4,14 @@ This lib contains some classes useful for modelers or viewers based on [WebGLMod
 
 ## Install
 
-Note : Builds are commited so you can just copy builds and use them as is.
-
-You need to install package [three-js-blobtree](https://github.com/maximeq/three-js-blobtree) first (not published on npm, you may need credentials). Install it in the same folder as this package.
+You need to install package [three-js-blobtree](https://github.com/maximeq/three-js-blobtree) first. Install it in the same folder as this package.
 Then run :
 
 > npm install
+
+[WebGLModelers](https://github.com/maximeq/webgl-modelers) plugins are meant to be directly bundled with the target modeler package. However, it is possible to build this package and include it directly in a web page.
+Builds are commited for a direct usage, but you can also run :
+
 > npm run build
 
 ## Usage

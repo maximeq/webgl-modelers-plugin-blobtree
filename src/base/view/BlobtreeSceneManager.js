@@ -9,7 +9,7 @@ const SceneManager = WebGLModelers.SceneManager;
 
 /**
  *  A SceneManager linked to a BlobtreeModel
- *  @param {ModelerModel} model
+ *  @param {BlobtreeModel} model
  */
 var BlobtreeSceneManager = function(model) {
     SceneManager.call(this, model);
@@ -18,7 +18,9 @@ BlobtreeSceneManager.prototype = Object.create( SceneManager.prototype );
 BlobtreeSceneManager.prototype.constructor = BlobtreeSceneManager;
 
 /**
- *  Will return
+ *  Will return intersection with the blobtree.
+ *  Use a ray to blob intersection, faster than Three raycaster.
+ *
  *  @param {number} precision Default to 0.001
  */
 BlobtreeSceneManager.prototype.getSceneIntersections = (function(){

@@ -4,7 +4,8 @@ var WebGLModelers = require("webgl-modelers");
 
 const THREE = require("three");
 const Backbone = require("backbone");
-const Blobtree = (window && window.Blobtree) || require("three-js-blobtree");
+
+const Blobtree = require("three-js-blobtree");
 
 const SimpleSMCWorker = require("./workers/SimpleSMCWorker.js");
 
