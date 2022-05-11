@@ -13,7 +13,7 @@ const externals = [
     "three",
     "three-js-blobtree",
     "backbone",
-    "underscore",
+    "underscore"
 ];
 
 // globals where the external libs are expected (iife only)
@@ -23,7 +23,7 @@ const globals = {
     jquery: "$",
     underscore: "_",
     backbone: "Backbone",
-    "three-js-blobtree": "Blobtree",
+    "three-js-blobtree": "Blobtree"
 };
 
 export default {
@@ -33,7 +33,7 @@ export default {
     // common options
     plugins: [
         commonjs(), // handles requires in CJS dependancies
-        nodeResolve(), // resolves node_module dependancies
+        nodeResolve() // resolves node_module dependancies
     ],
     external: externals,
 
@@ -42,13 +42,13 @@ export default {
         {
             // for bundlers
             format: "esm",
-            file: `${DIST}/${MODULE_FILENAME}.mjs`,
+            file: `${DIST}/${MODULE_FILENAME}.mjs`
         },
 
         {
             // for node
             format: "cjs",
-            file: `${DIST}/${MODULE_FILENAME}.cjs`,
+            file: `${DIST}/${MODULE_FILENAME}.cjs`
         },
 
         {
@@ -57,7 +57,7 @@ export default {
             name: MODULE_NAME,
             globals: globals,
             file: `${DIST}/${MODULE_FILENAME}.js`,
-            sourcemap: true, // for easier debugging in dev tools
+            sourcemap: true // for easier debugging in dev tools
         },
 
         {
@@ -67,8 +67,8 @@ export default {
             globals: globals,
             file: `${DIST}/${MODULE_FILENAME}.min.js`,
             plugins: [
-                terser(), // minify
-            ],
-        },
-    ],
+                terser() // minify
+            ]
+        }
+    ]
 };
