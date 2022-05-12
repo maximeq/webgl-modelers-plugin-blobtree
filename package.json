@@ -2,7 +2,7 @@
     "name": "webgl-modelers-plugin-blobtree",
     "version": "1.130.0",
     "description": "Add modules to webgl-modelers for modelers using blobtree.",
-    "module": "src/exports.js",
+    "module": "src/check-wrapper.js",
     "browser": "dist/webgl-modelers-plugin-blobtree.min.js",
     "main": "dist/webgl-modelers-plugin-blobtree.cjs",
     "scripts": {
@@ -10,6 +10,7 @@
         "build": "rollup -c"
     },
     "dependencies": {
+        "dioxygen-resources": "file:../dioxygen-resources",
         "@dualbox/three": "1.130.x",
         "backbone": "^1.4.0",
         "bootstrap": "^4.3.1",
