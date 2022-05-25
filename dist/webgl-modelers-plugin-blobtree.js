@@ -42288,11 +42288,6 @@ var WebglModelersPluginBlobtree = (function (WebGLModelers$2, require$$1, requir
 
     }
 
-    var BufferGeometryUtils$1 = /*#__PURE__*/Object.freeze({
-        __proto__: null,
-        BufferGeometryUtils: BufferGeometryUtils
-    });
-
     // Duplication checks
 
     const PACKAGE_NAME = "webgl-modelers-plugin-blobtree";
@@ -42300,7 +42295,7 @@ var WebglModelersPluginBlobtree = (function (WebGLModelers$2, require$$1, requir
     checkThreeRevision(PACKAGE_NAME, 130);
 
     checkDependancy(PACKAGE_NAME, "WebglModelersPluginBlobtree", WebglModelersPluginBlobtree);
-    checkDependancy(PACKAGE_NAME, "BufferGeometryUtils", BufferGeometryUtils$1);
+    checkDependancy(PACKAGE_NAME, "BufferGeometryUtils", BufferGeometryUtils);
 
     WebGLModelers__default["default"].Plugins.Blobtree = {
         SimpleSMCWorker: SimpleSMCWorker_1,

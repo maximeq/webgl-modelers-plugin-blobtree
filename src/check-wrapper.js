@@ -1,6 +1,6 @@
 // Duplication checks
 
-import { checkDependancy, checkThreeRevision } from "dioxygen-resources";
+import { checkDependancy, checkThreeRevision } from "three-js-checker";
 import * as WebglModelersPluginBlobtree from "./exports";
 import {BufferGeometryUtils} from "@dualbox/three/examples/jsm/utils/BufferGeometryUtils";
 

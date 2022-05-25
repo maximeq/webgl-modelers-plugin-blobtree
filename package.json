@@ -10,7 +10,7 @@
         "build": "rollup -c"
     },
     "dependencies": {
-        "dioxygen-resources": "file:../dioxygen-resources",
+        "three-js-checker": "1.0.x",
         "@dualbox/three": "1.130.x",
         "backbone": "^1.4.0",
         "bootstrap": "^4.3.1",
