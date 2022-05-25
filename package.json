@@ -1,6 +1,6 @@
 {
     "name": "webgl-modelers-plugin-blobtree",
-    "version": "1.130.0",
+    "version": "2.130.0",
     "description": "Add modules to webgl-modelers for modelers using blobtree.",
     "module": "src/check-wrapper.js",
     "browser": "dist/webgl-modelers-plugin-blobtree.min.js",
