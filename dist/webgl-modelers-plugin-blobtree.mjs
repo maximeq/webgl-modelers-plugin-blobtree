@@ -1,5 +1,4 @@
-import WebGLModelers$2 from 'webgl-modelers';
-export { default } from 'webgl-modelers';
+import require$$0 from 'webgl-modelers';
 import require$$1 from 'three';
 import require$$2 from 'backbone';
 import require$$3 from 'three-js-blobtree';
@@ -144,7 +143,7 @@ var SimpleSMCWorker$1 = {
 
 var SimpleSMCWorker_1 = SimpleSMCWorker$1;
 
-var WebGLModelers$1 = WebGLModelers$2;
+var WebGLModelers$1 = require$$0;
 
 const THREE$2 = require$$1;
 const Backbone = require$$2;
@@ -384,7 +383,7 @@ var BlobtreeModel = Backbone.Model.extend(
 
 var BlobtreeModel_1 = BlobtreeModel;
 
-var WebGLModelers = WebGLModelers$2;
+var WebGLModelers = require$$0;
 
 const THREE$1 = require$$1;
 
@@ -19047,7 +19046,7 @@ function WebGLRenderStates( extensions, capabilities ) {
 
 	let renderStates = new WeakMap();
 
-	function get( scene, renderCallDepth = 0 ) {
+	function get( scene, renderCallDepth ) {
 
 		let renderState;
 
@@ -23913,7 +23912,7 @@ function createCanvasElement() {
 
 }
 
-function WebGLRenderer( parameters = {} ) {
+function WebGLRenderer( parameters ) {
 
 	const _canvas = parameters.canvas !== undefined ? parameters.canvas : createCanvasElement(),
 		_context = parameters.context !== undefined ? parameters.context : null,
@@ -42290,16 +42289,11 @@ const PACKAGE_NAME = "webgl-modelers-plugin-blobtree";
 
 checkThreeRevision(PACKAGE_NAME, 130);
 
-checkDependancy(PACKAGE_NAME, "WebglModelersPluginBlobtree", WebglModelersPluginBlobtree);
+checkDependancy(
+    PACKAGE_NAME,
+    "WebglModelersPluginBlobtree",
+    WebglModelersPluginBlobtree
+);
 checkDependancy(PACKAGE_NAME, "BufferGeometryUtils", BufferGeometryUtils);
 
-WebGLModelers$2.Plugins.Blobtree = {
-    SimpleSMCWorker: SimpleSMCWorker_1,
-    BlobtreeSceneManager: BlobtreeSceneManager_1,
-    BlobtreeModel: BlobtreeModel_1
-};
-
-Object.keys(WebGLModelers$2.Plugins.Blobtree).forEach(function(k) {
-    WebGLModelers$2.Plugins.Blobtree[k];
-    WebGLModelers$2[k] = WebGLModelers$2.Plugins.Blobtree[k];
-});
+export { BlobtreeModel_1 as BlobtreeModel, BlobtreeSceneManager_1 as BlobtreeSceneManager, SimpleSMCWorker_1 as SimpleSMCWorker };

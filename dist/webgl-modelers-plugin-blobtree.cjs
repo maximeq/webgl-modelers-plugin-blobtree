@@ -1,13 +1,15 @@
 'use strict';
 
-var WebGLModelers$2 = require('webgl-modelers');
+Object.defineProperty(exports, '__esModule', { value: true });
+
+var require$$0 = require('webgl-modelers');
 var require$$1 = require('three');
 var require$$2 = require('backbone');
 var require$$3 = require('three-js-blobtree');
 
 function _interopDefaultLegacy (e) { return e && typeof e === 'object' && 'default' in e ? e : { 'default': e }; }
 
-var WebGLModelers__default = /*#__PURE__*/_interopDefaultLegacy(WebGLModelers$2);
+var require$$0__default = /*#__PURE__*/_interopDefaultLegacy(require$$0);
 var require$$1__default = /*#__PURE__*/_interopDefaultLegacy(require$$1);
 var require$$2__default = /*#__PURE__*/_interopDefaultLegacy(require$$2);
 var require$$3__default = /*#__PURE__*/_interopDefaultLegacy(require$$3);
@@ -152,7 +154,7 @@ var SimpleSMCWorker$1 = {
 
 var SimpleSMCWorker_1 = SimpleSMCWorker$1;
 
-var WebGLModelers$1 = WebGLModelers__default["default"];
+var WebGLModelers$1 = require$$0__default["default"];
 
 const THREE$2 = require$$1__default["default"];
 const Backbone = require$$2__default["default"];
@@ -392,7 +394,7 @@ var BlobtreeModel = Backbone.Model.extend(
 
 var BlobtreeModel_1 = BlobtreeModel;
 
-var WebGLModelers = WebGLModelers__default["default"];
+var WebGLModelers = require$$0__default["default"];
 
 const THREE$1 = require$$1__default["default"];
 
@@ -19055,7 +19057,7 @@ function WebGLRenderStates( extensions, capabilities ) {
 
 	let renderStates = new WeakMap();
 
-	function get( scene, renderCallDepth = 0 ) {
+	function get( scene, renderCallDepth ) {
 
 		let renderState;
 
@@ -23921,7 +23923,7 @@ function createCanvasElement() {
 
 }
 
-function WebGLRenderer( parameters = {} ) {
+function WebGLRenderer( parameters ) {
 
 	const _canvas = parameters.canvas !== undefined ? parameters.canvas : createCanvasElement(),
 		_context = parameters.context !== undefined ? parameters.context : null,
@@ -42298,18 +42300,13 @@ const PACKAGE_NAME = "webgl-modelers-plugin-blobtree";
 
 checkThreeRevision(PACKAGE_NAME, 130);
 
-checkDependancy(PACKAGE_NAME, "WebglModelersPluginBlobtree", WebglModelersPluginBlobtree);
+checkDependancy(
+    PACKAGE_NAME,
+    "WebglModelersPluginBlobtree",
+    WebglModelersPluginBlobtree
+);
 checkDependancy(PACKAGE_NAME, "BufferGeometryUtils", BufferGeometryUtils);
 
-WebGLModelers__default["default"].Plugins.Blobtree = {
-    SimpleSMCWorker: SimpleSMCWorker_1,
-    BlobtreeSceneManager: BlobtreeSceneManager_1,
-    BlobtreeModel: BlobtreeModel_1
-};
-
-Object.keys(WebGLModelers__default["default"].Plugins.Blobtree).forEach(function(k) {
-    WebGLModelers__default["default"].Plugins.Blobtree[k];
-    WebGLModelers__default["default"][k] = WebGLModelers__default["default"].Plugins.Blobtree[k];
-});
-
-module.exports = WebGLModelers__default["default"];
+exports.BlobtreeModel = BlobtreeModel_1;
+exports.BlobtreeSceneManager = BlobtreeSceneManager_1;
+exports.SimpleSMCWorker = SimpleSMCWorker_1;
