@@ -6,8 +6,7 @@
     "browser": "dist/webgl-modelers-plugin-blobtree.min.js",
     "main": "dist/webgl-modelers-plugin-blobtree.cjs",
     "scripts": {
-        "lint": "eslint --env node --env browser --env es6 **.js",
-        "build": "rollup -c"
+        "build": "npx rollup -c"
     },
     "dependencies": {
         "three-js-checker": "1.0.x",
