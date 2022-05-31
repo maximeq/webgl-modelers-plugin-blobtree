@@ -118,9 +118,6 @@ var WebglModelersPluginBlobtree = (function (exports, require$$0, require$$1, re
             for(var i=0; i<params.libpaths.length; ++i){
                 var l = params.libpaths[i];
                 imports += "importScripts('"+l.url+"');\n";
-                if(l.name === "threejs"){
-                    imports += "var THREE = THREE || Three;\n"; // In case we are importing three-full which for some reason defines Three but not THREE...
-                }
                 found[l.name] = true;
             }
 
@@ -19051,7 +19048,7 @@ var WebglModelersPluginBlobtree = (function (exports, require$$0, require$$1, re
 
     	let renderStates = new WeakMap();
 
-    	function get( scene, renderCallDepth ) {
+    	function get( scene, renderCallDepth = 0 ) {
 
     		let renderState;
 
@@ -23917,7 +23914,7 @@ var WebglModelersPluginBlobtree = (function (exports, require$$0, require$$1, re
 
     }
 
-    function WebGLRenderer( parameters ) {
+    function WebGLRenderer( parameters = {} ) {
 
     	const _canvas = parameters.canvas !== undefined ? parameters.canvas : createCanvasElement(),
     		_context = parameters.context !== undefined ? parameters.context : null,

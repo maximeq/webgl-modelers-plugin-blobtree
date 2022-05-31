@@ -81,9 +81,6 @@ var SimpleSMCWorker = {
         for(var i=0; i<params.libpaths.length; ++i){
             var l = params.libpaths[i];
             imports += "importScripts('"+l.url+"');\n";
-            if(l.name === "threejs"){
-                imports += "var THREE = THREE || Three;\n"; // In case we are importing three-full which for some reason defines Three but not THREE...
-            }
             found[l.name] = true;
         }
 
