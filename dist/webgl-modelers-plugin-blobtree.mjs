@@ -24148,7 +24148,7 @@ function WebGLRenderer( parameters = {} ) {
 
 		_currentDrawBuffers[ 0 ] = 1029;
 
-		info = new WebGLInfo( _gl );
+		info = new WebGLInfo();
 		properties = new WebGLProperties();
 		textures = new WebGLTextures( _gl, extensions, state, properties, capabilities, utils, info );
 		cubemaps = new WebGLCubeMaps( _this );
