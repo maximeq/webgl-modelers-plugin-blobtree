@@ -86,6 +86,18 @@ var BlobtreeModel = Backbone.Model.extend(
     },
 
     /**
+     * @return {THREE.BufferGeometry} the blobtree computed geometry if this.getGStatus == GSTATUS.UP_TO_DATE, null otherwise.
+     *
+     */
+    getGeometry() {
+        if (this.gStatus === GSTATUS.UP_TO_DATE) {
+            return this.blobGeom;
+        } else {
+            return null;
+        }
+    },
+
+    /**
      *  Add an element to the blobtree.
      *  Can be a Node or a Primitive.
      *  @param {Blobtree.Element} element
