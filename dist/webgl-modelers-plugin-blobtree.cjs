@@ -126,10 +126,10 @@ var SimpleSMCWorker$1 = {
             libpath.name === "blobtreejs";
         });
 
-        if (threejsLibPath){
+        if (!threejsLibPath){
             throw "Error : SimpleSMCWorker needs lib THREE.JS imported with name threejs in libpaths.";
         }
-        if (blobtreejsLibPath){
+        if (!blobtreejsLibPath){
             throw "Error : SimpleSMCWorker needs lib THREE.JS imported with name blobtreejs in libpaths.";
         }
 
