@@ -111,14 +111,11 @@ var WebglModelersPluginBlobtree = (function (exports, require$$0, require$$1, re
          *  @param {{name:string, url:string}[]} params.libpaths Library path in which we can look for our required libraries.
          *  @param {boolean} params.splitMax If true, the Blobtree.SplitmaxPolygonizer will be used instead of the simple SMC.
          */
-        create:function(params){
+        create: function (params) {
 
-            const threejsLibPath = params.libpaths.find((libpath) => {
-                libpath.name === "threejs";
-            });
-            const blobtreejsLibPath = params.libpaths.find((libpath) => {
-                libpath.name === "blobtreejs";
-            });
+            const threejsLibPath = params.libpaths.find((libpath) => libpath.name === "threejs");
+
+            const blobtreejsLibPath = params.libpaths.find((libpath) => libpath.name === "blobtreejs");
 
             if (!threejsLibPath){
                 throw "Error : SimpleSMCWorker needs lib THREE.JS imported with name threejs in libpaths.";
