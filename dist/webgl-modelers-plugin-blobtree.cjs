@@ -113,28 +113,29 @@ var SimpleSMCWorker$1 = {
     ].join("\n"),
     /**
      *  Create a new SimpleSMCWorker
-     *  @params {boolean} params.splitMax If true, the Blobtree.SplitmaxPolygonizer will be used instead of the simple SMC.
+     *  @param {Object} params
+     *  @param {{name:string, url:string}[]} params.libpaths Library path in which we can look for our required libraries.
+     *  @param {boolean} params.splitMax If true, the Blobtree.SplitmaxPolygonizer will be used instead of the simple SMC.
      */
     create:function(params){
 
-        // Check that required libs are found
-        var found = {};
+        const threejsLibPath = params.libpaths.find((libpath) => {
+            libpath.name === "threejs";
+        });
+        const blobtreejsLibPath = params.libpaths.find((libpath) => {
+            libpath.name === "blobtreejs";
+        });
 
-        var imports = "window = {};\n";
-        for(var i=0; i<params.libpaths.length; ++i){
-            var l = params.libpaths[i];
-            imports += "importScripts('"+l.url+"');\n";
-            found[l.name] = true;
-        }
-
-        if(!found["threejs"]){
+        if (threejsLibPath){
             throw "Error : SimpleSMCWorker needs lib THREE.JS imported with name threejs in libpaths.";
         }
-        if(!found["blobtreejs"]){
+        if (blobtreejsLibPath){
             throw "Error : SimpleSMCWorker needs lib THREE.JS imported with name blobtreejs in libpaths.";
         }
 
-        var code = SimpleSMCWorker$1.code;
+        const imports = `window = {};\n` + `import("${threejsLibPath.url}");\n` + `import("${blobtreejsLibPath.url}");\n`;
+
+        let code = SimpleSMCWorker$1.code;
         if (params.splitMax){
             code = code.replace("var split_max = false;", "var split_max = true;");
         }
@@ -234,6 +235,18 @@ var BlobtreeModel = Backbone.Model.extend(
     setBlobtree: function(bt){
         this.blobtree = bt;
         this._invalidGeometry();
+    },
+
+    /**
+     * @return {THREE.BufferGeometry} the blobtree computed geometry if this.getGStatus == GSTATUS.UP_TO_DATE, null otherwise.
+     *
+     */
+    getGeometry() {
+        if (this.gStatus === GSTATUS.UP_TO_DATE) {
+            return this.blobGeom;
+        } else {
+            return null;
+        }
     },
 
     /**
