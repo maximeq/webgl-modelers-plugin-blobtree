@@ -76,25 +76,18 @@ var SimpleSMCWorker = {
      */
     create: function (params) {
 
-        const necessaryLibs = {};
-        ["threejs", "buffergeometryutils", "blobtreejs"].forEach((name) => {
-            necessaryLibs[name] = params.libpaths.find((libpath) => libpath.name === name);
+        const necessaryLibNames = ["threejs", "buffergeometryutils", "blobtreejs"];
+        const necessaryLibDescription = ["Three.js", "BufferGeometryUtils (Three.js examples)", "Blobtree.js"];
+        /** @type {(string | undefined)[]}[] */
+        const necessaryLibUrls = [];
+        necessaryLibNames.forEach((name, index) => {
+            necessaryLibUrls[name] = params.libpaths.find((libpath) => libpath.name === name)?.url;
+            if (!necessaryLibUrls[name]) {
+                throw "Error : SimpleSMCWorker needs lib " + necessaryLibDescription[index] + " imported with name " + name + " in libpaths.";
+            }
         });
 
-        if (!necessaryLibs["threejs"]){
-            throw "Error : SimpleSMCWorker needs lib THREE.JS imported with name threejs in libpaths.";
-        }
-        if (!necessaryLibs["buffergeometryutils"]) {
-            throw "Error : SimpleSMCWorker needs lib THREE.JS imported with name buffergeometryutils in libpaths.";
-        }
-        if (!necessaryLibs["blobtreejs"]) {
-            throw "Error : SimpleSMCWorker needs lib THREE.JS imported with name blobtreejs in libpaths.";
-        }
-
-        const imports = `window = {};\n` +
-            `import("${necessaryLibs["threejs"].url}");\n` +
-            `import("${necessaryLibs["buffergeometryutils"]}");\n` +
-            `import("${necessaryLibs["blobtreejs"]}");\n`;
+        const imports = necessaryLibUrls.map((url) => `import("${url}");\n`).join("");
 
         let code = SimpleSMCWorker.code;
         if (params.splitMax){
