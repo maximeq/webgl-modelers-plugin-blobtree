@@ -48,7 +48,7 @@ var WebglModelersPluginBlobtree = (function (exports, require$$0, require$$1, re
      *
      */
     var SimpleSMCWorker$1 = {
-        code:[
+        code: [
             /**
              *  @param {Object} e Message for worker
              *  @param {number} e.processId Unique id for the process being launched
@@ -107,26 +107,29 @@ var WebglModelersPluginBlobtree = (function (exports, require$$0, require$$1, re
         ].join("\n"),
         /**
          *  Create a new SimpleSMCWorker
-         *  @param {Object} params
-         *  @param {{name:string, url:string}[]} params.libpaths Library path in which we can look for our required libraries.
-         *  @param {boolean} params.splitMax If true, the Blobtree.SplitmaxPolygonizer will be used instead of the simple SMC.
+         *  @params {boolean} params.splitMax If true, the Blobtree.SplitmaxPolygonizer will be used instead of the simple SMC.
          */
         create: function (params) {
 
-            const necessaryLibNames = ["threejs", "buffergeometryutils", "blobtreejs"];
-            const necessaryLibDescription = ["Three.js", "BufferGeometryUtils (Three.js examples)", "Blobtree.js"];
-            const necessaryLibUrls = necessaryLibNames.map((name, index) => {
-                const url = params.libpaths.find((libpath) => libpath.name === name)?.url;
-                if (!url) {
-                    throw "Error : SimpleSMCWorker needs lib " + necessaryLibDescription[index] + " imported with name " + name + " in libpaths.";
-                }
-                return url;
-            });
+            // Check that required libs are found
+            var found = {};
 
-            const imports = necessaryLibUrls.map((url) => `import("${url}");\n`).join("");
+            var imports = "var window = {};\n var document = null;\n";
+            for (var i = 0; i < params.libpaths.length; ++i) {
+                var l = params.libpaths[i];
+                imports += "importScripts('" + l.url + "');\n";
+                found[l.name] = true;
+            }
 
-            let code = SimpleSMCWorker$1.code;
-            if (params.splitMax){
+            if (!found["threejs"]) {
+                throw "Error : SimpleSMCWorker needs lib THREE.JS imported with name threejs in libpaths.";
+            }
+            if (!found["blobtreejs"]) {
+                throw "Error : SimpleSMCWorker needs lib THREE.JS imported with name blobtreejs in libpaths.";
+            }
+
+            var code = SimpleSMCWorker$1.code;
+            if (params.splitMax) {
                 code = code.replace("var split_max = false;", "var split_max = true;");
             }
 
