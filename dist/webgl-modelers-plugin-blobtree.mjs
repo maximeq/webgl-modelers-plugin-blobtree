@@ -110,9 +110,7 @@ var SimpleSMCWorker$1 = {
 
         const necessaryLibNames = ["threejs", "buffergeometryutils", "blobtreejs"];
         const necessaryLibDescription = ["Three.js", "BufferGeometryUtils (Three.js examples)", "Blobtree.js"];
-        /** @type {(string | undefined)[]}[] */
-        const necessaryLibUrls = [];
-        necessaryLibNames.map((name, index) => {
+        const necessaryLibUrls = necessaryLibNames.map((name, index) => {
             const url = params.libpaths.find((libpath) => libpath.name === name)?.url;
             if (!url) {
                 throw "Error : SimpleSMCWorker needs lib " + necessaryLibDescription[index] + " imported with name " + name + " in libpaths.";
