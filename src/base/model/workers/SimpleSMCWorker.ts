@@ -1,6 +1,3 @@
-'use strict';
-
-
 /**
  *  This worker will execute a simple SlidingMarchingCubes on a given blobtree and return the geometry.
  *  Following libraries must be imported :
@@ -10,7 +7,7 @@
  *  Please add importScripts(pathToLib); to this worker code.
  *
  */
-var SimpleSMCWorker = {
+export const SimpleSMCWorker = {
     code: [
         /**
          *  @param {Object} e Message for worker
@@ -105,5 +102,3 @@ var SimpleSMCWorker = {
         );
     }
 }
-
-module.exports = SimpleSMCWorker;

@@ -1,1 +1,1 @@
-{"version":3,"file":"BlobtreeModel.d.ts","sourceRoot":"","sources":["../../../../src/base/model/BlobtreeModel.js"],"names":[],"mappings":";AAaA;;;;;;;;;;;;;;;;;;;;GAoBG;AACH,+BAwNG"}
+{"version":3,"file":"BlobtreeModel.d.ts","sourceRoot":"","sources":["../../../../src/base/model/BlobtreeModel.ts"],"names":[],"mappings":"AAQA;;;;;;;;;;;;;;;;;;;;GAoBG;AACH,eAAO,MAAM,aAAa,KAwNpB,CAAC"}

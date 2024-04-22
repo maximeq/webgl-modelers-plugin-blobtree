@@ -1,4 +1,31 @@
 /**
+ *  This worker will execute a simple SlidingMarchingCubes on a given blobtree and return the geometry.
+ *  Following libraries must be imported :
+ *  three.js
+ *  blobtree.js
+ *
+ *  Please add importScripts(pathToLib); to this worker code.
+ *
+ */
+declare const SimpleSMCWorker: {
+    code: string;
+    /**
+     *  Create a new SimpleSMCWorker
+     *  @params {boolean} params.splitMax If true, the Blobtree.SplitmaxPolygonizer will be used instead of the simple SMC.
+     */
+    create: (params: any) => Worker;
+};
+
+/**
+ *  A SceneManager linked to a BlobtreeModel
+ *  @param {BlobtreeModel} model
+ */
+declare const BlobtreeSceneManager: {
+    (model: any): void;
+    prototype: any;
+};
+
+/**
  *  The internal blobtree model of the modeler, in the MVC architecture.
  *  It contains :
  *  - the Blobtree instance.
@@ -19,5 +46,6 @@
  *  TODO later will contain :
  *  - History of all modification
  */
-export declare const BlobtreeModel: any;
-//# sourceMappingURL=BlobtreeModel.d.ts.map
+declare const BlobtreeModel: any;
+
+export { BlobtreeModel, BlobtreeSceneManager, SimpleSMCWorker };
