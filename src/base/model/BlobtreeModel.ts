@@ -1,10 +1,8 @@
-import * as WebGLModelers from "webgl-modelers";
-import * as THREE from "three";
+import { BufferGeometry, BufferAttribute } from "three";
 import Backbone from "backbone";
-import * as Blobtree from "three-js-blobtree";
+import { GSTATUS } from "@dioxygen-software/webgl-modelers";
+import { RootNode, Types, SplitMaxPolygonizer, SlidingMarchingCubes } from "@dioxygen-software/three-js-blobtree";
 import { SimpleSMCWorker } from "./workers/SimpleSMCWorker.js";
-
-const GSTATUS = WebGLModelers.GSTATUS;
 
 /**
  *  The internal blobtree model of the modeler, in the MVC architecture.
@@ -39,10 +37,10 @@ export const BlobtreeModel = Backbone.Model.extend(
          *                                   It's an object and not an array since we may want to add checking on keys later.
          */
         initialize: function (attrs, options) {
-            this.blobtree = new Blobtree.RootNode();
+            this.blobtree = new RootNode();
 
-            this.blobGeom = new THREE.BufferGeometry();
-            this.blobGeom.setAttribute('position', new THREE.BufferAttribute(new Float32Array([0, 0, 0, 0, 0, 0, 0, 0, 0]), 3));// Avoid a THREE.JS Warning
+            this.blobGeom = new BufferGeometry();
+            this.blobGeom.setAttribute('position', new BufferAttribute(new Float32Array([0, 0, 0, 0, 0, 0, 0, 0, 0]), 3));// Avoid a JS Warning
 
             this.gStatus = GSTATUS.OUTDATED;
 
@@ -67,7 +65,7 @@ export const BlobtreeModel = Backbone.Model.extend(
         },
 
         fromJSON: function (json) {
-            this.blobtree = Blobtree.Types.fromJSON(json);
+            this.blobtree = Types.fromJSON(json);
             this._invalidGeometry();
         },
 
@@ -81,7 +79,7 @@ export const BlobtreeModel = Backbone.Model.extend(
         },
 
         /**
-         * @return {THREE.BufferGeometry} the blobtree computed geometry if this.getGStatus == GSTATUS.UP_TO_DATE, null otherwise.
+         * @return {BufferGeometry} the blobtree computed geometry if this.getGStatus == GSTATUS.UP_TO_DATE, null otherwise.
          *
          */
         getGeometry() {
@@ -95,8 +93,8 @@ export const BlobtreeModel = Backbone.Model.extend(
         /**
          *  Add an element to the blobtree.
          *  Can be a Node or a Primitive.
-         *  @param {Blobtree.Element} element
-         *  @param {Blobtree.Node} parent If null, the element will be directly attached to the root.
+         *  @param {Element} element
+         *  @param {Node} parent If null, the element will be directly attached to the root.
          */
         addBlobtreeElement: function (element, parent) {
             parent = parent || this.blobtree;
@@ -175,11 +173,11 @@ export const BlobtreeModel = Backbone.Model.extend(
                         var data = e.data;
                         if (data.cmd === "geometry" && self.processId === data.processId) {
                             self._setGStatus(GSTATUS.COMPUTING, 100);
-                            self.blobGeom = new THREE.BufferGeometry();
-                            self.blobGeom.setAttribute('position', new THREE.BufferAttribute(data.buffers.position, 3));
-                            self.blobGeom.setAttribute('normal', new THREE.BufferAttribute(data.buffers.normal, 3));
-                            self.blobGeom.setAttribute('color', new THREE.BufferAttribute(data.buffers.color, 3));
-                            self.blobGeom.setIndex(new THREE.BufferAttribute(data.buffers.index, 1));
+                            self.blobGeom = new BufferGeometry();
+                            self.blobGeom.setAttribute('position', new BufferAttribute(data.buffers.position, 3));
+                            self.blobGeom.setAttribute('normal', new BufferAttribute(data.buffers.normal, 3));
+                            self.blobGeom.setAttribute('color', new BufferAttribute(data.buffers.color, 3));
+                            self.blobGeom.setIndex(new BufferAttribute(data.buffers.index, 1));
                             self.blobGeom.computeBoundingBox();
                             self.clearWorker();
                             self.processId = null;
@@ -208,18 +206,18 @@ export const BlobtreeModel = Backbone.Model.extend(
                     this.processTimeout = setTimeout(function () {
                         var smc = null;
                         if (this.splitMaxPolygonizer) {
-                            smc = new Blobtree.SplitMaxPolygonizer(
+                            smc = new SplitMaxPolygonizer(
                                 self.blobtree,
                                 {
                                     subPolygonizer: {
-                                        class: Blobtree.SlidingMarchingCubes,
+                                        class: SlidingMarchingCubes,
                                         convergence: { step: 4 },
                                         detailRatio: 1.0
                                     }
                                 }
                             );
                         } else {
-                            smc = new Blobtree.SlidingMarchingCubes(
+                            smc = new SlidingMarchingCubes(
                                 self.blobtree,
                                 {
                                     convergence: { step: 4 },

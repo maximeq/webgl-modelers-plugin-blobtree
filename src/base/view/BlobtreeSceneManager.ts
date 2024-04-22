@@ -1,7 +1,5 @@
-import * as  WebGLModelers from "webgl-modelers";
-import * as  THREE from "three";
-
-const SceneManager = WebGLModelers.SceneManager;
+import { Vector3, BufferGeometry, BufferAttribute } from "three";
+import { SceneManager } from "@dioxygen-software/webgl-modelers";
 
 /**
  *  A SceneManager linked to a BlobtreeModel
@@ -20,9 +18,9 @@ BlobtreeSceneManager.prototype.constructor = BlobtreeSceneManager;
  *  @param {number} precision Default to 0.001
  */
 BlobtreeSceneManager.prototype.getSceneIntersections = (function () {
-    var size = new THREE.Vector3();
-    var center = new THREE.Vector3();
-    var dcomputer = new THREE.Vector3();
+    var size = new Vector3();
+    var center = new Vector3();
+    var dcomputer = new Vector3();
 
     return function (ray, precision) {
         var bt = this.model.getBlobtree();
@@ -32,7 +30,7 @@ BlobtreeSceneManager.prototype.getSceneIntersections = (function () {
             bt.getAABB().getCenter(center);
             var res = {
                 v: 0,
-                g: new THREE.Vector3(),
+                g: new Vector3(),
                 step: 0
             };
             dcomputer.subVectors(ray.origin, center);
@@ -55,8 +53,8 @@ BlobtreeSceneManager.prototype.getSceneIntersections = (function () {
  */
 BlobtreeSceneManager.prototype.clearBlobtreeMesh = function () {
     this.modelGroup.getObjectByName("blobtree").geometry.dispose();
-    var defaultG = new THREE.BufferGeometry();
-    defaultG.setAttribute('position', new THREE.BufferAttribute(new Float32Array([0, 0, 0, 0, 0, 0, 0, 0, 0]), 3));// Avoid a THREE.JS Warning
+    var defaultG = new BufferGeometry();
+    defaultG.setAttribute('position', new BufferAttribute(new Float32Array([0, 0, 0, 0, 0, 0, 0, 0, 0]), 3));// Avoid a JS Warning
     this.modelGroup.getObjectByName("blobtree").geometry = defaultG;
     this.requireRender();
 };

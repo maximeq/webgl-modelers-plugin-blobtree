@@ -1,7 +1,7 @@
-import * as WebGLModelers from 'webgl-modelers';
-import * as THREE from 'three';
+import { Vector3, BufferGeometry, BufferAttribute } from 'three';
+import { SceneManager, GSTATUS } from '@dioxygen-software/webgl-modelers';
 import Backbone from 'backbone';
-import * as Blobtree from 'three-js-blobtree';
+import { RootNode, Types, SplitMaxPolygonizer, SlidingMarchingCubes } from '@dioxygen-software/three-js-blobtree';
 
 /**
  *  This worker will execute a simple SlidingMarchingCubes on a given blobtree and return the geometry.
@@ -99,7 +99,6 @@ const SimpleSMCWorker = {
     }
 };
 
-const SceneManager = WebGLModelers.SceneManager;
 /**
  *  A SceneManager linked to a BlobtreeModel
  *  @param {BlobtreeModel} model
@@ -116,9 +115,9 @@ BlobtreeSceneManager.prototype.constructor = BlobtreeSceneManager;
  *  @param {number} precision Default to 0.001
  */
 BlobtreeSceneManager.prototype.getSceneIntersections = (function () {
-    var size = new THREE.Vector3();
-    var center = new THREE.Vector3();
-    var dcomputer = new THREE.Vector3();
+    var size = new Vector3();
+    var center = new Vector3();
+    var dcomputer = new Vector3();
     return function (ray, precision) {
         var bt = this.model.getBlobtree();
         if (bt) {
@@ -127,7 +126,7 @@ BlobtreeSceneManager.prototype.getSceneIntersections = (function () {
             bt.getAABB().getCenter(center);
             var res = {
                 v: 0,
-                g: new THREE.Vector3(),
+                g: new Vector3(),
                 step: 0
             };
             dcomputer.subVectors(ray.origin, center);
@@ -149,13 +148,12 @@ BlobtreeSceneManager.prototype.getSceneIntersections = (function () {
  */
 BlobtreeSceneManager.prototype.clearBlobtreeMesh = function () {
     this.modelGroup.getObjectByName("blobtree").geometry.dispose();
-    var defaultG = new THREE.BufferGeometry();
-    defaultG.setAttribute('position', new THREE.BufferAttribute(new Float32Array([0, 0, 0, 0, 0, 0, 0, 0, 0]), 3)); // Avoid a THREE.JS Warning
+    var defaultG = new BufferGeometry();
+    defaultG.setAttribute('position', new BufferAttribute(new Float32Array([0, 0, 0, 0, 0, 0, 0, 0, 0]), 3)); // Avoid a JS Warning
     this.modelGroup.getObjectByName("blobtree").geometry = defaultG;
     this.requireRender();
 };
 
-const GSTATUS = WebGLModelers.GSTATUS;
 /**
  *  The internal blobtree model of the modeler, in the MVC architecture.
  *  It contains :
@@ -187,9 +185,9 @@ const BlobtreeModel = Backbone.Model.extend({
      *                                   It's an object and not an array since we may want to add checking on keys later.
      */
     initialize: function (attrs, options) {
-        this.blobtree = new Blobtree.RootNode();
-        this.blobGeom = new THREE.BufferGeometry();
-        this.blobGeom.setAttribute('position', new THREE.BufferAttribute(new Float32Array([0, 0, 0, 0, 0, 0, 0, 0, 0]), 3)); // Avoid a THREE.JS Warning
+        this.blobtree = new RootNode();
+        this.blobGeom = new BufferGeometry();
+        this.blobGeom.setAttribute('position', new BufferAttribute(new Float32Array([0, 0, 0, 0, 0, 0, 0, 0, 0]), 3)); // Avoid a JS Warning
         this.gStatus = GSTATUS.OUTDATED;
         this.processTimeout = null;
         this.processId = null;
@@ -208,7 +206,7 @@ const BlobtreeModel = Backbone.Model.extend({
         return this.blobtree.toJSON();
     },
     fromJSON: function (json) {
-        this.blobtree = Blobtree.Types.fromJSON(json);
+        this.blobtree = Types.fromJSON(json);
         this._invalidGeometry();
     },
     getBlobtree: function () {
@@ -219,7 +217,7 @@ const BlobtreeModel = Backbone.Model.extend({
         this._invalidGeometry();
     },
     /**
-     * @return {THREE.BufferGeometry} the blobtree computed geometry if this.getGStatus == GSTATUS.UP_TO_DATE, null otherwise.
+     * @return {BufferGeometry} the blobtree computed geometry if this.getGStatus == GSTATUS.UP_TO_DATE, null otherwise.
      *
      */
     getGeometry() {
@@ -233,8 +231,8 @@ const BlobtreeModel = Backbone.Model.extend({
     /**
      *  Add an element to the blobtree.
      *  Can be a Node or a Primitive.
-     *  @param {Blobtree.Element} element
-     *  @param {Blobtree.Node} parent If null, the element will be directly attached to the root.
+     *  @param {Element} element
+     *  @param {Node} parent If null, the element will be directly attached to the root.
      */
     addBlobtreeElement: function (element, parent) {
         parent = parent || this.blobtree;
@@ -306,11 +304,11 @@ const BlobtreeModel = Backbone.Model.extend({
                     var data = e.data;
                     if (data.cmd === "geometry" && self.processId === data.processId) {
                         self._setGStatus(GSTATUS.COMPUTING, 100);
-                        self.blobGeom = new THREE.BufferGeometry();
-                        self.blobGeom.setAttribute('position', new THREE.BufferAttribute(data.buffers.position, 3));
-                        self.blobGeom.setAttribute('normal', new THREE.BufferAttribute(data.buffers.normal, 3));
-                        self.blobGeom.setAttribute('color', new THREE.BufferAttribute(data.buffers.color, 3));
-                        self.blobGeom.setIndex(new THREE.BufferAttribute(data.buffers.index, 1));
+                        self.blobGeom = new BufferGeometry();
+                        self.blobGeom.setAttribute('position', new BufferAttribute(data.buffers.position, 3));
+                        self.blobGeom.setAttribute('normal', new BufferAttribute(data.buffers.normal, 3));
+                        self.blobGeom.setAttribute('color', new BufferAttribute(data.buffers.color, 3));
+                        self.blobGeom.setIndex(new BufferAttribute(data.buffers.index, 1));
                         self.blobGeom.computeBoundingBox();
                         self.clearWorker();
                         self.processId = null;
@@ -339,16 +337,16 @@ const BlobtreeModel = Backbone.Model.extend({
                 this.processTimeout = setTimeout(function () {
                     var smc = null;
                     if (this.splitMaxPolygonizer) {
-                        smc = new Blobtree.SplitMaxPolygonizer(self.blobtree, {
+                        smc = new SplitMaxPolygonizer(self.blobtree, {
                             subPolygonizer: {
-                                class: Blobtree.SlidingMarchingCubes,
+                                class: SlidingMarchingCubes,
                                 convergence: { step: 4 },
                                 detailRatio: 1.0
                             }
                         });
                     }
                     else {
-                        smc = new Blobtree.SlidingMarchingCubes(self.blobtree, {
+                        smc = new SlidingMarchingCubes(self.blobtree, {
                             convergence: { step: 4 },
                             detailRatio: 1.0
                         });
