@@ -1,36 +1,41 @@
 {
-    "name": "webgl-modelers-plugin-blobtree",
+    "name": "@dioxygen-software/webgl-modelers-plugin-blobtree",
     "version": "2.130.0",
     "description": "Add modules to webgl-modelers for modelers using blobtree.",
-    "module": "src/check-wrapper.js",
-    "browser": "dist/webgl-modelers-plugin-blobtree.min.js",
-    "main": "dist/webgl-modelers-plugin-blobtree.cjs",
+    "main": "dist/webgl-modelers-plugin-blobtree.module.js",
+    "module": "dist/webgl-modelers-plugin-blobtree.module.js",
+    "types": "dist/types/exports.d.ts",
+    "type": "module",
     "scripts": {
         "build": "npx rollup -c"
     },
+    "peerDependencies": {
+        "@dualbox/three": "1.130.x"
+    },
     "dependencies": {
-        "three-js-checker": "1.0.x",
-        "@dualbox/three": "1.130.x",
+        "@dioxygen-software/three-js-blobtree": "file:submodules/three-js-blobtree",
+        "@dioxygen-software/webgl-modelers": "file:submodules/webgl-modelers",
         "backbone": "^1.4.0",
         "bootstrap": "^4.3.1",
         "javascript-state-machine": "^3.1.0",
         "jquery": "^3.3.1",
         "jszip-sync": "^3.2.1-sync",
-        "three-js-blobtree": "file:../three-js-blobtree",
-        "underscore": "^1.9.1",
-        "webgl-modelers": "file:../webgl-modelers"
+        "underscore": "^1.9.1"
     },
     "devDependencies": {
-        "@rollup/plugin-commonjs": "^22.0.0",
-        "@rollup/plugin-node-resolve": "^13.3.0",
-        "eslint": "^8.15.0",
-        "prettier": "^2.6.2",
-        "rollup": "^2.72.1",
-        "rollup-plugin-terser": "^7.0.2",
-        "three-js-debug-rendertarget": "2.130.x"
+        "@rollup/plugin-commonjs": "^24.0.1",
+        "@rollup/plugin-node-resolve": "^15.0.1",
+        "@rollup/plugin-typescript": "^11.1.1",
+        "@types/backbone": "^1.4.19",
+        "@types/three": "^0.130.0",
+        "http-server": "^14.1.1",
+        "rollup": "^3.15.0",
+        "rollup-plugin-delete": "^2.0.0",
+        "rollup-plugin-dts": "^6.1.0",
+        "three-js-debug-rendertarget": "2.130.x",
+        "tslib": "^2.6.0"
     },
     "files": [
-        "src/*",
         "dist/*"
     ],
     "author": "Maxime Quiblier <maximequiblier@gmail.com>",
