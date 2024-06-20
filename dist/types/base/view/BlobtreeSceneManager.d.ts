@@ -1,21 +1,23 @@
-import { Vector3, type Ray } from "three";
+import { Vector3, type Ray, Object3D, Group } from "three";
 import { SceneManager } from "@dioxygen-software/webgl-modelers";
 import { BlobtreeModel } from "../model/BlobtreeModel";
 /**
  *  A SceneManager linked to a BlobtreeModel
  */
 export declare class BlobtreeSceneManager extends SceneManager {
+    model: typeof BlobtreeModel;
+    modelGroup: Group;
     constructor(model: typeof BlobtreeModel);
     /**
      *  Will return intersection with the blobtree.
      *  Use a ray to blob intersection, faster than Three raycaster.
      *
-     *  @param {number} precision Default to 0.001
+     *  @param precision Default to 0.001
      */
-    getSceneIntersections: (ray: Ray, precision: number) => {
-        distance: any;
-        object: any;
-        point: any;
+    getSceneIntersections: (this: BlobtreeSceneManager, ray: Ray, precision: number) => {
+        distance: null;
+        object: Object3D | undefined;
+        point: null;
         gradient: Vector3;
     }[];
     /**

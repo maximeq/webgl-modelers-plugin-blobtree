@@ -1,8 +1,14 @@
 import { BufferGeometry, BufferAttribute } from "three";
 import Backbone from "backbone";
 import { GSTATUS } from "@dioxygen-software/webgl-modelers";
-import { RootNode, Types, SplitMaxPolygonizer, SlidingMarchingCubes } from "@dioxygen-software/three-js-blobtree";
+import { RootNode, Types, SplitMaxPolygonizer, SlidingMarchingCubes, type ElementJSON, Node, Element } from "@dioxygen-software/three-js-blobtree";
 import { SimpleSMCWorker } from "./workers/SimpleSMCWorker.js";
+
+type BlobtreeModelOptions = {
+    workerize: boolean;
+    libpaths: { name: string, url: string}[];
+    splitMaxPolygonizer: boolean;
+}
 
 /**
  *  The internal blobtree model of the modeler, in the MVC architecture.
@@ -25,18 +31,26 @@ import { SimpleSMCWorker } from "./workers/SimpleSMCWorker.js";
  *  TODO later will contain :
  *  - History of all modification
  */
-export const BlobtreeModel = Backbone.Model.extend(
+export const BlobtreeModel = Backbone.Model.extend(class BlobtreeModel
     {
-
+        blobtree: RootNode;
+        blobGeom: BufferGeometry;
+        gStatus: string;
+        processTimeout: NodeJS.Timeout | null;
+        processId: string | null;
+        workerize: boolean;
+        worker: Worker | null | undefined;
+        libpaths: { name: string, url: string }[] | undefined;
+        splitMaxPolygonizer: boolean;
         /**
-         *  @param {Object} attrs Can be empty
-         *  @param {Object} options Options for this model
-         *  @param {boolean} options.workerize If true, geometry computation will execute in a worker.
-         *  @param {Object} options.libpaths If workerize is true, then this must contains paths to all necessary libraries.
+         *  @param attrs Can be empty // TODO : check if we can remove this
+         *  @param options Options for this model
+         *  @param options.workerize If true, geometry computation will execute in a worker.
+         *  @param options.libpaths If workerize is true, then this must contains paths to all necessary libraries.
          *                                   This includes but may not be limited to three.js, blobtree.js.
          *                                   It's an object and not an array since we may want to add checking on keys later.
          */
-        initialize: function (attrs, options) {
+        constructor(_attrs: Object, options: BlobtreeModelOptions) {
             this.blobtree = new RootNode();
 
             this.blobGeom = new BufferGeometry();
@@ -48,123 +62,126 @@ export const BlobtreeModel = Backbone.Model.extend(
             this.processId = null;
 
             this.workerize = options.workerize;
+            this.worker = undefined;
+            this.libpaths = undefined;
             if (this.workerize) {
                 this.worker = null;
                 this.libpaths = options.libpaths;
             }
             this.splitMaxPolygonizer = options.splitMaxPolygonizer || false;
 
-            var self = this;
+            const self = this;
             setTimeout(function () {
                 self._setGStatus(GSTATUS.UP_TO_DATE);
             })
-        },
+        }
 
-        toJSON: function () {
+        toJSON (): ElementJSON {
             return this.blobtree.toJSON();
-        },
+        }
 
-        fromJSON: function (json) {
+        fromJSON (json: ElementJSON): void {
             this.blobtree = Types.fromJSON(json);
             this._invalidGeometry();
-        },
+        }
 
-        getBlobtree: function () {
+        getBlobtree (): RootNode {
             return this.blobtree;
-        },
+        }
 
-        setBlobtree: function (bt) {
+        setBlobtree (bt: RootNode): void {
             this.blobtree = bt;
             this._invalidGeometry();
-        },
+        }
 
         /**
-         * @return {BufferGeometry} the blobtree computed geometry if this.getGStatus == GSTATUS.UP_TO_DATE, null otherwise.
+         * @return the blobtree computed geometry if this.getGStatus == GSTATUS.UP_TO_DATE, null otherwise.
          *
          */
-        getGeometry() {
+        getGeometry(): BufferGeometry | null {
             if (this.gStatus === GSTATUS.UP_TO_DATE) {
                 return this.blobGeom;
             } else {
                 return null;
             }
-        },
+        }
 
         /**
          *  Add an element to the blobtree.
          *  Can be a Node or a Primitive.
-         *  @param {Element} element
-         *  @param {Node} parent If null, the element will be directly attached to the root.
+         *  @param parent If null, the element will be directly attached to the root.
          */
-        addBlobtreeElement: function (element, parent) {
+        addBlobtreeElement (element: Element, parent: Node) {
             parent = parent || this.blobtree;
             parent.addChild(element);
 
             this._invalidGeometry();
-        },
+        }
 
-        _invalidGeometry: function () {
+        _invalidGeometry () {
+            if (this.processTimeout === null)
+                throw "[BlobtreeModel] _invalidGeometry : processTimeout is null, this should never happen.";
             clearTimeout(this.processTimeout);
             this.processTimeout = null;
             this.clearWorker();
             this.processId = null;
 
             this._setGStatus(GSTATUS.OUTDATED);
-        },
+        }
 
-        getGStatus: function () {
+        getGStatus () {
             return this.gStatus;
-        },
+        }
 
-        _setGStatus: function (s, data) {
+        _setGStatus (s: string, data?: number) {
             if (this.gStatus !== s) {
-                var e = { type: 'gStatusChanged', old: this.gStatus, new: s, geometry: this.blobGeom, name: "blobtree" };
+                const e = { type: 'gStatusChanged', old: this.gStatus, new: s, geometry: this.blobGeom, name: "blobtree" };
                 this.gStatus = s;
                 this.trigger(e.type, e);
             }
             if (s === GSTATUS.COMPUTING) {
-                var e = { type: 'gComputingProgressChanged', name: "blobtree", percent: data };
+                const e = { type: 'gComputingProgressChanged', name: "blobtree", percent: data };
                 this.trigger(e.type, e);
             }
-        },
+        }
 
         /**
          * Generate a unique id for a computing job.
          * Note : Can take up to 1 ms because of the methode used, if you need to generate a lot, change the method.
          */
-        _generateProcessID: (function () {
-            var last = null;
-            return function () {
-                var u = new Date().getTime();
+        _generateProcessID = (function () {
+            let last: string | null = null;
+            return function (): string {
+                let u = (new Date().getTime()).toString();
                 while (u === last) {
-                    u = new Date().getTime();
+                    u = (new Date().getTime()).toString();
                 }
                 last = u;
                 return u;
             }
-        })(),
+        })()
 
-        clearWorker: function () {
+        clearWorker () {
             if (this.worker) {
                 this.worker.terminate();
                 this.worker = null;
             }
-        },
+        }
 
         /**
          *  Update the blobtree geometry (async).
          *  Note that this will only trigger computation if the geometry is out dated.
          *  If a changed occurs in the blobtree before the computation is done, the geometry status will return to MainModeler.GSTATUS.OUTDATED and computation will abort.
-         *  @return {String} a unique ID
+         *  @return a unique ID
          */
-        updateGeometries: function () {
+        updateGeometries (): string | null {
             if (this.gStatus === GSTATUS.UP_TO_DATE) {
                 return null;
             } else if (this.gStatus === GSTATUS.OUTDATED) {
                 this.processId = this._generateProcessID();
                 this._setGStatus(GSTATUS.COMPUTING, 0);
                 var self = this;
-                if (this.workerize) {
+                if (this.workerize && this.libpaths) {
                     this.worker = SimpleSMCWorker.create({
                         libpaths: this.libpaths,
                         splitMax: this.splitMaxPolygonizer
@@ -203,16 +220,18 @@ export const BlobtreeModel = Backbone.Model.extend(
                         0
                     );
                 } else {
-                    this.processTimeout = setTimeout(function () {
+                    this.processTimeout = setTimeout(function (this: BlobtreeModel) {
                         var smc = null;
                         if (this.splitMaxPolygonizer) {
                             smc = new SplitMaxPolygonizer(
                                 self.blobtree,
                                 {
                                     subPolygonizer: {
-                                        class: SlidingMarchingCubes,
-                                        convergence: { step: 4 },
-                                        detailRatio: 1.0
+                                        className: "SlidingMarchingCubes",
+                                        smcParams: {
+                                            convergence: { step: 4 },
+                                            detailRatio: 1.0
+                                        }
                                     }
                                 }
                             );
@@ -227,6 +246,8 @@ export const BlobtreeModel = Backbone.Model.extend(
                         }
                         self.blobGeom = smc.compute();
                         self.blobGeom.computeBoundingBox();
+                        if (self.processTimeout === null)
+                            throw "[BlobtreeModel] updateGeometries : processTimeout is null, this should never happen.";
                         clearTimeout(self.processTimeout);
                         self.processId = null;
                         self._setGStatus(GSTATUS.UP_TO_DATE);
@@ -241,4 +262,4 @@ export const BlobtreeModel = Backbone.Model.extend(
             }
         }
 
-    });
+});

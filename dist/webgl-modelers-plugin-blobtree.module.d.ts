@@ -1,6 +1,13 @@
-import { Ray, Vector3 } from 'three';
+import { Group, Ray, Object3D, Vector3 } from 'three';
 import { SceneManager } from '@dioxygen-software/webgl-modelers';
 
+type CreateWorkerParams = {
+    libpaths: {
+        name: string;
+        url: string;
+    }[];
+    splitMax: boolean;
+};
 /**
  *  This worker will execute a simple SlidingMarchingCubes on a given blobtree and return the geometry.
  *  Following libraries must be imported :
@@ -16,7 +23,7 @@ declare const SimpleSMCWorker: {
      *  Create a new SimpleSMCWorker
      *  @params {boolean} params.splitMax If true, the Blobtree.SplitmaxPolygonizer will be used instead of the simple SMC.
      */
-    create: (params: any) => Worker;
+    create: (params: CreateWorkerParams) => Worker;
 };
 
 /**
@@ -46,17 +53,19 @@ declare const BlobtreeModel: any;
  *  A SceneManager linked to a BlobtreeModel
  */
 declare class BlobtreeSceneManager extends SceneManager {
+    model: typeof BlobtreeModel;
+    modelGroup: Group;
     constructor(model: typeof BlobtreeModel);
     /**
      *  Will return intersection with the blobtree.
      *  Use a ray to blob intersection, faster than Three raycaster.
      *
-     *  @param {number} precision Default to 0.001
+     *  @param precision Default to 0.001
      */
-    getSceneIntersections: (ray: Ray, precision: number) => {
-        distance: any;
-        object: any;
-        point: any;
+    getSceneIntersections: (this: BlobtreeSceneManager, ray: Ray, precision: number) => {
+        distance: null;
+        object: Object3D | undefined;
+        point: null;
         gradient: Vector3;
     }[];
     /**
