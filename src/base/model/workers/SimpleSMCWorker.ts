@@ -80,8 +80,8 @@ export const SimpleSMCWorker = {
         const found: {[key: string]: boolean} = {};
 
         let imports = "let window = {};\n let document = null;\n";
-        for (var i = 0; i < params.libpaths.length; ++i) {
-            var l = params.libpaths[i];
+        for (let i = 0; i < params.libpaths.length; ++i) {
+            const l = params.libpaths[i];
             imports += "importScripts('" + l.url + "');\n";
             found[l.name] = true;
         }

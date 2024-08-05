@@ -78,8 +78,8 @@ const SimpleSMCWorker = {
         // Check that required libs are found
         const found = {};
         let imports = "let window = {};\n let document = null;\n";
-        for (var i = 0; i < params.libpaths.length; ++i) {
-            var l = params.libpaths[i];
+        for (let i = 0; i < params.libpaths.length; ++i) {
+            const l = params.libpaths[i];
             imports += "importScripts('" + l.url + "');\n";
             found[l.name] = true;
         }
@@ -120,7 +120,7 @@ const SimpleSMCWorker = {
  *  TODO later will contain :
  *  - History of all modification
  */
-const BlobtreeModel = Backbone.Model.extend(class BlobtreeModel {
+class BlobtreeModel extends Backbone.Model {
     blobtree;
     blobGeom;
     gStatus;
@@ -138,7 +138,8 @@ const BlobtreeModel = Backbone.Model.extend(class BlobtreeModel {
      *                                   This includes but may not be limited to three.js, blobtree.js.
      *                                   It's an object and not an array since we may want to add checking on keys later.
      */
-    constructor(_attrs, options) {
+    constructor(attrs, options) {
+        super(attrs, options);
         this.blobtree = new RootNode();
         this.blobGeom = new BufferGeometry();
         this.blobGeom.setAttribute('position', new BufferAttribute(new Float32Array([0, 0, 0, 0, 0, 0, 0, 0, 0]), 3)); // Avoid a JS Warning
@@ -251,14 +252,14 @@ const BlobtreeModel = Backbone.Model.extend(class BlobtreeModel {
         else if (this.gStatus === GSTATUS.OUTDATED) {
             this.processId = this._generateProcessID();
             this._setGStatus(GSTATUS.COMPUTING, 0);
-            var self = this;
+            const self = this;
             if (this.workerize && this.libpaths) {
                 this.worker = SimpleSMCWorker.create({
                     libpaths: this.libpaths,
                     splitMax: this.splitMaxPolygonizer
                 });
                 this.worker.onmessage = function (e) {
-                    var data = e.data;
+                    const data = e.data;
                     if (data.cmd === "geometry" && self.processId === data.processId) {
                         self._setGStatus(GSTATUS.COMPUTING, 100);
                         self.blobGeom = new BufferGeometry();
@@ -277,8 +278,8 @@ const BlobtreeModel = Backbone.Model.extend(class BlobtreeModel {
                 };
                 // This Timeout will hel break before worker processing.
                 setTimeout((function () {
-                    var pid = self.processId;
-                    var bt = self.blobtree.toJSON();
+                    const pid = self.processId;
+                    const bt = self.blobtree.toJSON();
                     return function () {
                         if (self.worker) { // could have been killed in the meantime
                             self.worker.postMessage({
@@ -292,7 +293,7 @@ const BlobtreeModel = Backbone.Model.extend(class BlobtreeModel {
             }
             else {
                 this.processTimeout = setTimeout(function () {
-                    var smc = null;
+                    let smc = null;
                     if (this.splitMaxPolygonizer) {
                         smc = new SplitMaxPolygonizer(self.blobtree, {
                             subPolygonizer: {
@@ -326,14 +327,12 @@ const BlobtreeModel = Backbone.Model.extend(class BlobtreeModel {
             return this.processId;
         }
     }
-});
+}
 
 /**
  *  A SceneManager linked to a BlobtreeModel
  */
 class BlobtreeSceneManager extends SceneManager {
-    model;
-    modelGroup;
     constructor(model) {
         super(model);
         this.modelGroup = new Group();
@@ -345,20 +344,19 @@ class BlobtreeSceneManager extends SceneManager {
      *  @param precision Default to 0.001
      */
     getSceneIntersections = (function () {
-        var size = new Vector3();
-        var center = new Vector3();
-        var dcomputer = new Vector3();
+        const size = new Vector3();
+        const center = new Vector3();
+        const dcomputer = new Vector3();
         return function (ray, precision) {
-            var bt = this.model.getBlobtree();
+            const bt = this.model.getBlobtree();
             if (bt) {
                 bt.prepareForEval();
                 bt.getAABB().getSize(size);
                 bt.getAABB().getCenter(center);
-                var res = {
+                const res = {
                     v: 0,
                     g: new Vector3(),
                     step: 0,
-                    distance: null,
                     point: null
                 };
                 dcomputer.subVectors(ray.origin, center);
@@ -385,7 +383,7 @@ class BlobtreeSceneManager extends SceneManager {
         if (!("geometry" in blobtreeFromGroup && blobtreeFromGroup.geometry instanceof BufferGeometry))
             throw "[BlobtreeSceneManager] clearBlobtreeMesh : No geometry in the blobtree mesh or mistyped geometry. This should not happen";
         blobtreeFromGroup.geometry.dispose();
-        var defaultG = new BufferGeometry();
+        const defaultG = new BufferGeometry();
         defaultG.setAttribute('position', new BufferAttribute(new Float32Array([0, 0, 0, 0, 0, 0, 0, 0, 0]), 3)); // Avoid a JS Warning
         blobtreeFromGroup.geometry = defaultG;
         this.requireRender();

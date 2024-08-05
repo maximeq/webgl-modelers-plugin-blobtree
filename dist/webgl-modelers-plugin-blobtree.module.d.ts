@@ -1,5 +1,9 @@
-import { Group, Ray, Object3D, Vector3 } from 'three';
+/// <reference types="node" />
+import * as three from 'three';
+import { BufferGeometry, Ray, Vector3 } from 'three';
 import { SceneManager } from '@dioxygen-software/webgl-modelers';
+import Backbone from 'backbone';
+import { RootNode, ElementJSON, Element, Node } from '@dioxygen-software/three-js-blobtree';
 
 type CreateWorkerParams = {
     libpaths: {
@@ -26,6 +30,14 @@ declare const SimpleSMCWorker: {
     create: (params: CreateWorkerParams) => Worker;
 };
 
+type BlobtreeModelOptions = {
+    workerize: boolean;
+    libpaths: {
+        name: string;
+        url: string;
+    }[];
+    splitMaxPolygonizer: boolean;
+};
 /**
  *  The internal blobtree model of the modeler, in the MVC architecture.
  *  It contains :
@@ -47,15 +59,67 @@ declare const SimpleSMCWorker: {
  *  TODO later will contain :
  *  - History of all modification
  */
-declare const BlobtreeModel: any;
+declare class BlobtreeModel extends Backbone.Model {
+    blobtree: RootNode;
+    blobGeom: BufferGeometry;
+    gStatus: string;
+    processTimeout: NodeJS.Timeout | null;
+    processId: string | null;
+    workerize: boolean;
+    worker: Worker | null | undefined;
+    libpaths: {
+        name: string;
+        url: string;
+    }[] | undefined;
+    splitMaxPolygonizer: boolean;
+    /**
+     *  @param attrs Can be empty // TODO : check if we can remove this
+     *  @param options Options for this model
+     *  @param options.workerize If true, geometry computation will execute in a worker.
+     *  @param options.libpaths If workerize is true, then this must contains paths to all necessary libraries.
+     *                                   This includes but may not be limited to three.js, blobtree.js.
+     *                                   It's an object and not an array since we may want to add checking on keys later.
+     */
+    constructor(attrs: Object, options: BlobtreeModelOptions);
+    toJSON(): ElementJSON;
+    fromJSON(json: ElementJSON): void;
+    getBlobtree(): RootNode;
+    setBlobtree(bt: RootNode): void;
+    /**
+     * @return the blobtree computed geometry if this.getGStatus == GSTATUS.UP_TO_DATE, null otherwise.
+     *
+     */
+    getGeometry(): BufferGeometry | null;
+    /**
+     *  Add an element to the blobtree.
+     *  Can be a Node or a Primitive.
+     *  @param parent If null, the element will be directly attached to the root.
+     */
+    addBlobtreeElement(element: Element, parent: Node): void;
+    _invalidGeometry(): void;
+    getGStatus(): string;
+    _setGStatus(s: string, data?: number): void;
+    /**
+     * Generate a unique id for a computing job.
+     * Note : Can take up to 1 ms because of the methode used, if you need to generate a lot, change the method.
+     */
+    _generateProcessID: () => string;
+    clearWorker(): void;
+    /**
+     *  Update the blobtree geometry (async).
+     *  Note that this will only trigger computation if the geometry is out dated.
+     *  If a changed occurs in the blobtree before the computation is done, the geometry status will return to MainModeler.GSTATUS.OUTDATED and computation will abort.
+     *  @return a unique ID
+     */
+    updateGeometries(): string | null;
+}
 
 /**
  *  A SceneManager linked to a BlobtreeModel
  */
 declare class BlobtreeSceneManager extends SceneManager {
-    model: typeof BlobtreeModel;
-    modelGroup: Group;
-    constructor(model: typeof BlobtreeModel);
+    model: BlobtreeModel;
+    constructor(model: BlobtreeModel);
     /**
      *  Will return intersection with the blobtree.
      *  Use a ray to blob intersection, faster than Three raycaster.
@@ -63,9 +127,9 @@ declare class BlobtreeSceneManager extends SceneManager {
      *  @param precision Default to 0.001
      */
     getSceneIntersections: (this: BlobtreeSceneManager, ray: Ray, precision: number) => {
-        distance: null;
-        object: Object3D | undefined;
-        point: null;
+        distance: number | undefined;
+        object: three.Object3D | undefined;
+        point: Vector3 | null;
         gradient: Vector3;
     }[];
     /**

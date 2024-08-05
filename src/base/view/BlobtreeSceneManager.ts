@@ -1,4 +1,4 @@
-import { Vector3, BufferGeometry, BufferAttribute, type Ray, Object3D, Group } from "three";
+import { Vector3, BufferGeometry, BufferAttribute, type Ray, Group } from "three";
 import { SceneManager } from "@dioxygen-software/webgl-modelers";
 import { BlobtreeModel } from "../model/BlobtreeModel";
 
@@ -7,10 +7,9 @@ import { BlobtreeModel } from "../model/BlobtreeModel";
  */
 
 export class BlobtreeSceneManager extends SceneManager {
-    model: typeof BlobtreeModel;
-    modelGroup: Group;
+    declare model: BlobtreeModel;
 
-    constructor(model: typeof BlobtreeModel) {
+    constructor(model: BlobtreeModel) {
         super(model);
         this.modelGroup = new Group();
     }
@@ -21,22 +20,27 @@ export class BlobtreeSceneManager extends SceneManager {
      *
      *  @param precision Default to 0.001
      */
-    getSceneIntersections = (function () {
-        var size = new Vector3();
-        var center = new Vector3();
-        var dcomputer = new Vector3();
+    override getSceneIntersections = (function () {
+        const size = new Vector3();
+        const center = new Vector3();
+        const dcomputer = new Vector3();
 
         return function (this: BlobtreeSceneManager, ray: Ray, precision: number) {
-            var bt = this.model.getBlobtree();
+            const bt = this.model.getBlobtree();
             if (bt) {
                 bt.prepareForEval();
                 bt.getAABB().getSize(size);
                 bt.getAABB().getCenter(center);
-                var res = {
+                const res: {
+                    v: number;
+                    g: Vector3;
+                    step: number;
+                    distance?: number;
+                    point: Vector3 | null
+                } = {
                     v: 0,
                     g: new Vector3(),
                     step: 0,
-                    distance: null,
                     point: null
                 };
                 dcomputer.subVectors(ray.origin, center);
@@ -64,7 +68,7 @@ export class BlobtreeSceneManager extends SceneManager {
         if (!("geometry" in blobtreeFromGroup && blobtreeFromGroup.geometry instanceof BufferGeometry))
             throw "[BlobtreeSceneManager] clearBlobtreeMesh : No geometry in the blobtree mesh or mistyped geometry. This should not happen";
         blobtreeFromGroup.geometry.dispose();
-        var defaultG = new BufferGeometry();
+        const defaultG = new BufferGeometry();
         defaultG.setAttribute('position', new BufferAttribute(new Float32Array([0, 0, 0, 0, 0, 0, 0, 0, 0]), 3));// Avoid a JS Warning
         blobtreeFromGroup.geometry = defaultG;
         this.requireRender();
