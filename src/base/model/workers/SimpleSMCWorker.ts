@@ -13,63 +13,63 @@ type CreateWorkerParams = {
  *
  */
 export const SimpleSMCWorker = {
-    code: [
+    code:
         /**
-         *  @param {Object} e Message for worker
-         *  @param {number} e.processId Unique id for the process being launched
-         *  @param {Object} e.blobtree The blobtree to be computed as a JSON object.
+         *  @param e Message for worker
+         *  @param e.processId Unique id for the process being launched
+         *  @param e.blobtree The blobtree to be computed as a JSON object.
          */
-        "self.onmessage = function(e){",
-        // "   debugger;",
-        "   self.processId = e.data.processId;",
-        "   self.blobtree = Blobtree.Types.fromJSON(e.data.blobtree);",
-        "   self.blobtree.prepareForEval()",
-        "   const progress = function (percent) {",
-        "       self.postMessage({",
-        "           cmd:'progress',",
-        "           processId:self.processId,",
-        "           percent:percent",
-        "       });",
-        "   };",
-        "   let split_max = false;", // use Blobtree.SplitMaxPolygonizer
-        "   let smc = null;",
-        "   if(split_max){",
-        "       smc = new Blobtree.SplitMaxPolygonizer(",
-        "           self.blobtree,",
-        "           {",
-        "               subPolygonizer:{",
-        "                   class:Blobtree.SlidingMarchingCubes,",
-        "                   convergence:{step:4},",
-        "                   detailRatio: 1.0",
-        "               },",
-        "               progress:progress",
-        "           }",
-        "       );",
-        "   }else{",
-        "       smc = new Blobtree.SlidingMarchingCubes(",
-        "           self.blobtree,",
-        "           {",
-        "               convergence:{step:4},",
-        "               detailRatio: 1.0,",
-        "               progress:progress",
-        "           }",
-        "       );",
-        "   }",
-        "   const g = smc.compute();",
-        "   const buffers = {",
-        "       position:g.getAttribute('position').array,",
-        "       normal:g.getAttribute('normal').array,",
-        "       color:g.getAttribute('color').array,",
-        "       index:g.getIndex().array",
-        "   };",
-        "   self.postMessage({",
-        "       cmd:'geometry',",
-        "       processId:self.processId,",
-        "       buffers:buffers,",
-        "       transferList:[buffers.position, buffers.normal, buffers.color, buffers.index]",
-        "   });",
-        "}",
-    ].join("\n"),
+        `
+        self.onmessage = function(e) {
+            self.processId = e.data.processId;
+            self.blobtree = Blobtree.Types.fromJSON(e.data.blobtree);
+            self.blobtree.prepareForEval();
+            const progress = function (percent) {
+                self.postMessage({
+                    cmd: 'progress',
+                    processId: self.processId,
+                    percent: percent
+                });
+            };
+            let split_max = false;      // use Blobtree.SplitMaxPolygonizer
+            let smc = null;
+            if (split_max) {
+                smc = new Blobtree.SplitMaxPolygonizer(
+                    self.blobtree,
+                    {
+                        subPolygonizer: {
+                            class: Blobtree.SlidingMarchingCubes,
+                            convergence: { step: 4 },
+                            detailRatio: 1.0
+                        },
+                        progress: progress
+                    }
+                );
+            } else {
+                smc = new Blobtree.SlidingMarchingCubes(
+                    self.blobtree,
+                    {
+                        convergence: { step: 4 },
+                        detailRatio: 1.0,
+                        progress: progress
+                    }
+                );
+            }
+            const g = smc.compute();
+            const buffers = {
+                position: g.getAttribute('position').array,
+                normal: g.getAttribute('normal').array,
+                color: g.getAttribute('color').array,
+                index: g.getIndex().array
+            };
+            self.postMessage({
+                cmd: 'geometry',
+                processId: self.processId,
+                buffers: buffers,
+                transferList: [buffers.position, buffers.normal, buffers.color, buffers.index]
+            });
+        };
+    `,
     /**
      *  Create a new SimpleSMCWorker
      *  @params {boolean} params.splitMax If true, the Blobtree.SplitmaxPolygonizer will be used instead of the simple SMC.
