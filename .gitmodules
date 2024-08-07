@@ -5,4 +5,4 @@
 [submodule "submodules/webgl-modelers"]
 	path = submodules/webgl-modelers
 	url = git@github.com:dioxygen-software/webgl-modelers.git
-	branch = jeulin/migration-ts
+	branch = r6.130

@@ -1,7 +1,13 @@
-/// <reference types="node" />
 import { BufferGeometry } from "three";
 import Backbone from "backbone";
 import { RootNode, type ElementJSON, type Node, type Element } from "@dioxygen-software/three-js-blobtree";
+/**
+ * Options for the model
+ *  @property workerize If true, geometry computation will execute in a worker.
+ *  @property libpaths If workerize is true, then this must contains paths to all necessary libraries.
+ *                                   This includes but may not be limited to three.js, blobtree.js.
+ *                                   It's an object and not an array since we may want to add checking on keys later.
+ */
 type BlobtreeModelOptions = {
     workerize: boolean;
     libpaths: {
@@ -47,10 +53,6 @@ export declare class BlobtreeModel extends Backbone.Model {
     /**
      *  @param attrs Can be empty // TODO : check if we can remove this
      *  @param options Options for this model
-     *  @param options.workerize If true, geometry computation will execute in a worker.
-     *  @param options.libpaths If workerize is true, then this must contains paths to all necessary libraries.
-     *                                   This includes but may not be limited to three.js, blobtree.js.
-     *                                   It's an object and not an array since we may want to add checking on keys later.
      */
     constructor(attrs: Object, options: BlobtreeModelOptions);
     toJSON(): ElementJSON;
