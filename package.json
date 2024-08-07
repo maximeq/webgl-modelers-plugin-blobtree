@@ -1,6 +1,6 @@
 {
     "name": "@dioxygen-software/webgl-modelers-plugin-blobtree",
-    "version": "2.130.0",
+    "version": "3.130.0",
     "description": "Add modules to webgl-modelers for modelers using blobtree.",
     "main": "dist/webgl-modelers-plugin-blobtree.module.js",
     "module": "dist/webgl-modelers-plugin-blobtree.module.js",
