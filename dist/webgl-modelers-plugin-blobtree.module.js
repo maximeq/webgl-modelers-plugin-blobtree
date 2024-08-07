@@ -353,13 +353,17 @@ class BlobtreeSceneManager extends SceneManager {
                     v: 0,
                     g: new Vector3(),
                     step: 0,
-                    point: null
+                    point: new Vector3(),
+                    distance: Number.POSITIVE_INFINITY
                 };
                 dcomputer.subVectors(ray.origin, center);
                 if (bt.intersectRayBlob(ray, res, dcomputer.length() + size.x + size.y + size.z, precision || 0.001)) {
+                    const object = this.modelGroup.getObjectByName("blobtree");
+                    if (object === undefined)
+                        throw "[BlobtreeSceneManager] getSceneIntersections : No blobtree mesh to intersect";
                     return [{
                             distance: res.distance,
-                            object: this.modelGroup.getObjectByName("blobtree"),
+                            object: object,
                             point: res.point,
                             gradient: res.g
                         }];

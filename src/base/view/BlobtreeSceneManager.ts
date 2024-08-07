@@ -25,7 +25,7 @@ export class BlobtreeSceneManager extends SceneManager {
         const center = new Vector3();
         const dcomputer = new Vector3();
 
-        return function (this: BlobtreeSceneManager, ray: Ray, precision: number) {
+        return function (this: BlobtreeSceneManager, ray: Ray, precision?: number) {
             const bt = this.model.getBlobtree();
             if (bt) {
                 bt.prepareForEval();
@@ -35,19 +35,23 @@ export class BlobtreeSceneManager extends SceneManager {
                     v: number;
                     g: Vector3;
                     step: number;
-                    distance?: number;
-                    point: Vector3 | null
+                    distance: number;
+                    point: Vector3
                 } = {
                     v: 0,
                     g: new Vector3(),
                     step: 0,
-                    point: null
+                    point: new Vector3(),
+                    distance: Number.POSITIVE_INFINITY
                 };
                 dcomputer.subVectors(ray.origin, center);
                 if (bt.intersectRayBlob(ray, res, dcomputer.length() + size.x + size.y + size.z, precision || 0.001)) {
+                    const object = this.modelGroup.getObjectByName("blobtree");
+                    if (object === undefined) throw "[BlobtreeSceneManager] getSceneIntersections : No blobtree mesh to intersect";
+
                     return [{
                         distance: res.distance,
-                        object: this.modelGroup.getObjectByName("blobtree"),
+                        object: object,
                         point: res.point,
                         gradient: res.g
                     }];

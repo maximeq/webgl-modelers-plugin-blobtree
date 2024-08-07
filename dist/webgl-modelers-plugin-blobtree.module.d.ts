@@ -128,10 +128,10 @@ declare class BlobtreeSceneManager extends SceneManager {
      *
      *  @param precision Default to 0.001
      */
-    getSceneIntersections: (this: BlobtreeSceneManager, ray: Ray, precision: number) => {
-        distance: number | undefined;
-        object: three.Object3D | undefined;
-        point: Vector3 | null;
+    getSceneIntersections: (this: BlobtreeSceneManager, ray: Ray, precision?: number) => {
+        distance: number;
+        object: three.Object3D;
+        point: Vector3;
         gradient: Vector3;
     }[];
     /**
