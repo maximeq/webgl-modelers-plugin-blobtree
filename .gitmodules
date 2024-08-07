@@ -1,8 +1,8 @@
 [submodule "submodules/three-js-blobtree"]
 	path = submodules/three-js-blobtree
 	url = git@github.com:maximeq/three-js-blobtree.git
-	branch = r3.130
+	branch = r4.130
 [submodule "submodules/webgl-modelers"]
 	path = submodules/webgl-modelers
 	url = git@github.com:dioxygen-software/webgl-modelers.git
-	branch = r5.130
+	branch = r6.130

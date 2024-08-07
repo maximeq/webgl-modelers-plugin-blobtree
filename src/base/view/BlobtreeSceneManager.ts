@@ -1,4 +1,4 @@
-import { Vector3, BufferGeometry, BufferAttribute, type Ray } from "three";
+import { Vector3, BufferGeometry, BufferAttribute, type Ray, Group } from "three";
 import { SceneManager } from "@dioxygen-software/webgl-modelers";
 import { BlobtreeModel } from "../model/BlobtreeModel";
 
@@ -7,38 +7,51 @@ import { BlobtreeModel } from "../model/BlobtreeModel";
  */
 
 export class BlobtreeSceneManager extends SceneManager {
+    declare model: BlobtreeModel;
 
-    constructor(model: typeof BlobtreeModel) {
+    constructor(model: BlobtreeModel) {
         super(model);
+        this.modelGroup = new Group();
     }
 
     /**
      *  Will return intersection with the blobtree.
      *  Use a ray to blob intersection, faster than Three raycaster.
      *
-     *  @param {number} precision Default to 0.001
+     *  @param precision Default to 0.001
      */
-    getSceneIntersections = (function () {
-        var size = new Vector3();
-        var center = new Vector3();
-        var dcomputer = new Vector3();
+    override getSceneIntersections = (function () {
+        const size = new Vector3();
+        const center = new Vector3();
+        const dcomputer = new Vector3();
 
-        return function (ray: Ray, precision: number) {
-            var bt = this.model.getBlobtree();
+        return function (this: BlobtreeSceneManager, ray: Ray, precision?: number) {
+            const bt = this.model.getBlobtree();
             if (bt) {
                 bt.prepareForEval();
                 bt.getAABB().getSize(size);
                 bt.getAABB().getCenter(center);
-                var res = {
+                const res: {
+                    v: number;
+                    g: Vector3;
+                    step: number;
+                    distance: number;
+                    point: Vector3
+                } = {
                     v: 0,
                     g: new Vector3(),
-                    step: 0
+                    step: 0,
+                    point: new Vector3(),
+                    distance: Number.POSITIVE_INFINITY
                 };
                 dcomputer.subVectors(ray.origin, center);
                 if (bt.intersectRayBlob(ray, res, dcomputer.length() + size.x + size.y + size.z, precision || 0.001)) {
+                    const object = this.modelGroup.getObjectByName("blobtree");
+                    if (object === undefined) throw "[BlobtreeSceneManager] getSceneIntersections : No blobtree mesh to intersect";
+
                     return [{
                         distance: res.distance,
-                        object: this.modelGroup.getObjectByName("blobtree"),
+                        object: object,
                         point: res.point,
                         gradient: res.g
                     }];
@@ -53,10 +66,15 @@ export class BlobtreeSceneManager extends SceneManager {
      *  Should be used with care.
      */
     clearBlobtreeMesh() {
-        this.modelGroup.getObjectByName("blobtree").geometry.dispose();
-        var defaultG = new BufferGeometry();
+        const blobtreeFromGroup = this.modelGroup.getObjectByName("blobtree");
+        if (blobtreeFromGroup === undefined)
+            throw "[BlobtreeSceneManager] clearBlobtreeMesh : No blobtree mesh to clear";
+        if (!("geometry" in blobtreeFromGroup && blobtreeFromGroup.geometry instanceof BufferGeometry))
+            throw "[BlobtreeSceneManager] clearBlobtreeMesh : No geometry in the blobtree mesh or mistyped geometry. This should not happen";
+        blobtreeFromGroup.geometry.dispose();
+        const defaultG = new BufferGeometry();
         defaultG.setAttribute('position', new BufferAttribute(new Float32Array([0, 0, 0, 0, 0, 0, 0, 0, 0]), 3));// Avoid a JS Warning
-        this.modelGroup.getObjectByName("blobtree").geometry = defaultG;
+        blobtreeFromGroup.geometry = defaultG;
         this.requireRender();
     };
 }
