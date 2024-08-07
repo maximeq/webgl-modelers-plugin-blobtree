@@ -131,7 +131,7 @@ class BlobtreeModel extends Backbone.Model {
     libpaths;
     splitMaxPolygonizer;
     /**
-     *  @param attrs Can be empty // TODO : check if we can remove this
+     *  @param attrs Can be empty
      *  @param options Options for this model
      */
     constructor(attrs, options) {
